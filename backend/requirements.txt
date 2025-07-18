@@ -5,4 +5,5 @@ Flask-Migrate
 web3
 solana
 stripe
-python-dotenv flask-cors
+python-dotenv 
+flask-cors
