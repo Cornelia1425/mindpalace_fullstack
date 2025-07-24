@@ -5,12 +5,16 @@ from flask_cors import CORS
 from models import db, User, Win
 from config import Config
 
-# Updated for production deployment - v2
+# Updated for production deployment - v3
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 db.init_app(app)
 jwt = JWTManager(app)
+
+@app.route('/version', methods=['GET'])
+def version():
+    return jsonify({'version': 'v3', 'status': 'updated'})
 
 @app.route('/register', methods=['POST'])
 def register():
