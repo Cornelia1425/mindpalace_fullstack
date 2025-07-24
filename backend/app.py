@@ -50,9 +50,29 @@ def wins():
         return jsonify({'msg': 'Win added'})
     else:
         wins = Win.query.filter_by(user_id=user_id).all()
-        return jsonify([{'date': w.date, 'desc': w.desc} for w in wins])
+        # Format dates to MM.DD format for frontend
+        formatted_wins = []
+        for w in wins:
+            try:
+                # Handle different date formats
+                if len(w.date) == 8 and w.date.isdigit():  # YYYYMMDD format
+                    year = w.date[:4]
+                    month = w.date[4:6]
+                    day = w.date[6:8]
+                    formatted_date = f"{month}.{day}"
+                elif '.' in w.date:  # Already MM.DD format
+                    formatted_date = w.date
+                else:
+                    formatted_date = w.date  # Keep as is if unknown format
+                
+                formatted_wins.append({'date': formatted_date, 'desc': w.desc})
+            except:
+                # If date parsing fails, keep original
+                formatted_wins.append({'date': w.date, 'desc': w.desc})
+        
+        return jsonify(formatted_wins)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True) 
+    app.run(debug=True, port=5050) 
