@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
@@ -75,4 +76,5 @@ def wins():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5050) 
+    port = int(os.environ.get('PORT', 5050))
+    app.run(debug=False, host='0.0.0.0', port=port) 
