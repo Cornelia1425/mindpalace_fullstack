@@ -31,9 +31,10 @@ function App() {
     
     try {
       const response = await fetch(`${API_BASE_URL}/wins`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/json'
         }
       });
       console.log('Response status:', response.status);
@@ -43,7 +44,14 @@ function App() {
         const wins = await response.json();
         console.log('Fetched wins:', wins);
         console.log('Number of wins fetched:', wins?.length);
-        setMilestones(wins);
+        
+        // Handle different response formats (desc vs subject field)
+        const formattedWins = wins.map(win => ({
+          date: win.date,
+          desc: win.desc || win.subject || win.text || ''
+        }));
+        
+        setMilestones(formattedWins);
       } else {
         console.error('Failed to fetch wins, status:', response.status);
         const errorText = await response.text();
@@ -64,7 +72,8 @@ function App() {
     if (!date.trim() || !desc.trim()) return;
     
     try {
-      const response = await fetch(`${API_BASE_URL}/wins`, {
+      // Try with 'desc' field first (local backend)
+      let response = await fetch(`${API_BASE_URL}/wins`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -72,6 +81,19 @@ function App() {
         },
         body: JSON.stringify({ date, desc })
       });
+      
+      // If that fails, try with 'subject' field (production backend)
+      if (!response.ok) {
+        console.log('Trying with subject field for production backend...');
+        response = await fetch(`${API_BASE_URL}/wins`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ date, subject: desc })
+        });
+      }
       
       if (response.ok) {
         // Add the new win to the local state
@@ -81,6 +103,8 @@ function App() {
         setShowModal(false);
       } else {
         console.error('Failed to save win');
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
       }
     } catch (error) {
       console.error('Error saving win:', error);
