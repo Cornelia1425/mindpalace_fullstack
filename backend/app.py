@@ -49,7 +49,10 @@ def wins():
     if request.method == 'POST':
         data = request.json
         date = data.get('date')
-        desc = data.get('desc')
+        # Support both 'desc' and 'subject' fields for compatibility
+        desc = data.get('desc') or data.get('subject')
+        if not desc:
+            return jsonify({'msg': 'Description (desc or subject) is required'}), 422
         win = Win(date=date, desc=desc, user_id=user_id)
         db.session.add(win)
         db.session.commit()
@@ -71,10 +74,10 @@ def wins():
                 else:
                     formatted_date = w.date  # Keep as is if unknown format
                 
-                formatted_wins.append({'date': formatted_date, 'desc': w.desc})
+                formatted_wins.append({'date': formatted_date, 'desc': w.desc, 'subject': w.desc})
             except:
                 # If date parsing fails, keep original
-                formatted_wins.append({'date': w.date, 'desc': w.desc})
+                formatted_wins.append({'date': w.date, 'desc': w.desc, 'subject': w.desc})
         
         return jsonify(formatted_wins)
 
