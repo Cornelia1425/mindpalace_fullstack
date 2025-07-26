@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from config import Config
 from models import db, User, Win
 
-# Updated for Render deployment - v4
+# Updated for Render deployment - v5
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
@@ -18,7 +18,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v4"})
+    return jsonify({"status": "updated", "version": "v5"})
 
 @app.route('/register', methods=['POST'])
 def register():
