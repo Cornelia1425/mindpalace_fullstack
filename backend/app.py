@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from config import Config
 from models import db, User, Win
 
-# Updated for Render deployment - v6
+# Updated for Render deployment - v7
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
@@ -18,7 +18,11 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v6"})
+    return jsonify({"status": "updated", "version": "v7"})
+
+@app.route('/test')
+def test():
+    return jsonify({"message": "This is a test endpoint", "timestamp": datetime.now().isoformat()})
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -49,6 +53,11 @@ def login():
 @app.route('/wins', methods=['GET', 'POST'])
 @jwt_required()
 def wins():
+    print("DEBUG: ===== WINS ENDPOINT CALLED =====")
+    print(f"DEBUG: Request method: {request.method}")
+    print(f"DEBUG: Request headers: {dict(request.headers)}")
+    print(f"DEBUG: Request data: {request.get_data()}")
+    
     user_id = get_jwt_identity()
     print(f"DEBUG: Wins endpoint called with method {request.method}, user_id: {user_id}")
     
