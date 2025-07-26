@@ -6,7 +6,7 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=True)
-    password_hash = db.Column(db.String(128), nullable=True)
+    password_hash = db.Column(db.String(255), nullable=True)
     eth_address = db.Column(db.String(64), unique=True, nullable=True)
     sol_address = db.Column(db.String(64), unique=True, nullable=True)
     wins = db.relationship('Win', backref='user', lazy=True)

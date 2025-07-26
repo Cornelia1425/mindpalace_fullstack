@@ -19,7 +19,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v18"})
+    return jsonify({"status": "updated", "version": "v19"})
 
 @app.route('/test')
 def test():
