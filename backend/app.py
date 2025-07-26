@@ -19,7 +19,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v17"})
+    return jsonify({"status": "updated", "version": "v18"})
 
 @app.route('/test')
 def test():
@@ -36,18 +36,22 @@ def init_db():
 
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    if not email or not password:
-        return jsonify({'msg': 'Email and password required'}), 400
-    if User.query.filter_by(email=email).first():
-        return jsonify({'msg': 'Email already registered'}), 400
-    user = User(email=email)
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({'msg': 'Registered successfully'})
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        if not email or not password:
+            return jsonify({'msg': 'Email and password required'}), 400
+        if User.query.filter_by(email=email).first():
+            return jsonify({'msg': 'Email already registered'}), 400
+        user = User(email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        return jsonify({'msg': 'Registered successfully'})
+    except Exception as e:
+        print(f"Registration error: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/login', methods=['POST'])
 def login():
