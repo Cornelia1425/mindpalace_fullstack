@@ -95,6 +95,19 @@ function App() {
         });
       }
       
+      // If still failing, try ensuring subject is a string
+      if (!response.ok) {
+        console.log('Ensuring subject is a string...');
+        response = await fetch(`${API_BASE_URL}/wins`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ date, subject: String(desc) })
+        });
+      }
+      
       if (response.ok) {
         // Add the new win to the local state
         setMilestones([...milestones, { date, desc }]);
