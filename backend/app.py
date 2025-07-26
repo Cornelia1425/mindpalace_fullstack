@@ -19,11 +19,20 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v16"})
+    return jsonify({"status": "updated", "version": "v17"})
 
 @app.route('/test')
 def test():
     return jsonify({"message": "This is a test endpoint", "timestamp": datetime.now().isoformat()})
+
+@app.route('/init-db')
+def init_db():
+    try:
+        with app.app_context():
+            db.create_all()
+        return jsonify({"message": "Database tables created successfully!"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -108,6 +117,8 @@ def wins():
 
 if __name__ == '__main__':
     with app.app_context():
+        # Create all database tables
         db.create_all()
+        print("Database tables created successfully!")
     port = int(os.environ.get('PORT', 5050))
     app.run(debug=False, host='0.0.0.0', port=port) 
