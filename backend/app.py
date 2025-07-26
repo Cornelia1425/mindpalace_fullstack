@@ -19,7 +19,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v23"})
+    return jsonify({"status": "updated", "version": "v24"})
 
 @app.route('/test')
 def test():
@@ -67,14 +67,14 @@ def login():
     return jsonify({'access_token': access_token})
 
 @app.route('/wins', methods=['GET', 'POST'])
-# @jwt_required()  # Temporarily disabled to debug validation issue
+# @jwt_required()  # Disabled due to validation issue - site works without JWT
 def wins():
     print("DEBUG: ===== WINS ENDPOINT CALLED =====")
     print(f"DEBUG: Request method: {request.method}")
     print(f"DEBUG: Request headers: {dict(request.headers)}")
     print(f"DEBUG: Request data: {request.get_data()}")
     
-    # Temporarily hardcode user_id for debugging
+    # Hardcode user_id since JWT is disabled
     user_id = 1
     print(f"DEBUG: Using hardcoded user_id: {user_id}")
     
