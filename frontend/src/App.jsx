@@ -34,7 +34,6 @@ function App() {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
-          // 'Content-Type': 'application/json'
         }
       });
       console.log('Response status:', response.status);
