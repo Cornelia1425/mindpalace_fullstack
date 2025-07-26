@@ -2,8 +2,10 @@ import os
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
-from models import db, User, Win
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 from config import Config
+from models import db, User, Win
 
 # Updated for Render deployment - v4
 app = Flask(__name__)
@@ -12,9 +14,11 @@ CORS(app)
 db.init_app(app)
 jwt = JWTManager(app)
 
-@app.route('/version', methods=['GET'])
+# Import models after db initialization
+
+@app.route('/version')
 def version():
-    return jsonify({'version': 'v3', 'status': 'updated'})
+    return jsonify({"status": "updated", "version": "v4"})
 
 @app.route('/register', methods=['POST'])
 def register():
