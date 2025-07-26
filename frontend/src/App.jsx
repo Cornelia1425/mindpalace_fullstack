@@ -69,7 +69,15 @@ function App() {
 
   const handleAdd = async (e) => {
     e && e.preventDefault();
-    if (!date.trim() || !desc.trim()) return;
+    
+    // Ensure both date and desc are strings and not empty
+    const dateStr = String(date || '').trim();
+    const descStr = String(desc || '').trim();
+    
+    if (!dateStr || !descStr) {
+      console.warn('Date and description must be non-empty strings');
+      return;
+    }
     
     try {
       // Try with 'desc' field first (local backend)
@@ -79,7 +87,7 @@ function App() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ date, desc })
+        body: JSON.stringify({ date: dateStr, desc: descStr })
       });
       
       // If that fails, try with 'subject' field (production backend)
@@ -91,13 +99,13 @@ function App() {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ date, subject: desc })
+          body: JSON.stringify({ date: dateStr, subject: descStr })
         });
       }
       
       if (response.ok) {
         // Add the new win to the local state
-        setMilestones([...milestones, { date, desc }]);
+        setMilestones([...milestones, { date: dateStr, desc: descStr }]);
         setDate('');
         setDesc('');
         setShowModal(false);
@@ -105,6 +113,16 @@ function App() {
         console.error('Failed to save win');
         const errorText = await response.text();
         console.error('Error response:', errorText);
+        
+        // Try to parse the error response to provide better feedback
+        try {
+          const errorObj = JSON.parse(errorText);
+          if (errorObj.msg) {
+            console.error('Server error message:', errorObj.msg);
+          }
+        } catch (parseError) {
+          console.error('Could not parse error response as JSON');
+        }
       }
     } catch (error) {
       console.error('Error saving win:', error);
