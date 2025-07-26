@@ -5,7 +5,7 @@ from flask_cors import CORS
 from models import db, User, Win
 from config import Config
 
-# Updated for production deployment - v3
+# Updated for Render deployment - v4
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
