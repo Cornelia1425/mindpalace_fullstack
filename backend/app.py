@@ -19,7 +19,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v19"})
+    return jsonify({"status": "updated", "version": "v20"})
 
 @app.route('/test')
 def test():
@@ -29,8 +29,10 @@ def test():
 def init_db():
     try:
         with app.app_context():
+            # Drop all tables first, then recreate
+            db.drop_all()
             db.create_all()
-        return jsonify({"message": "Database tables created successfully!"})
+        return jsonify({"message": "Database tables dropped and recreated successfully!"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
