@@ -7,10 +7,11 @@ from datetime import datetime, timedelta
 from config import Config
 from models import db, User, Win
 
-# Updated for Render deployment - v14
+# Updated for Render deployment - v16
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app)
+# Configure CORS to allow requests from Vercel frontend
+CORS(app, origins=['https://urmindpalace.vercel.app', 'http://localhost:5173'], supports_credentials=True)
 db.init_app(app)
 jwt = JWTManager(app)
 
@@ -18,7 +19,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v14"})
+    return jsonify({"status": "updated", "version": "v16"})
 
 @app.route('/test')
 def test():
