@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from config import Config
 from models import db, User, Win
 
-# Updated for Render deployment - v5
+# Updated for Render deployment - v6
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
@@ -18,7 +18,7 @@ jwt = JWTManager(app)
 
 @app.route('/version')
 def version():
-    return jsonify({"status": "updated", "version": "v5"})
+    return jsonify({"status": "updated", "version": "v6"})
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -50,11 +50,15 @@ def login():
 @jwt_required()
 def wins():
     user_id = get_jwt_identity()
+    print(f"DEBUG: Wins endpoint called with method {request.method}, user_id: {user_id}")
+    
     if request.method == 'POST':
         data = request.json
+        print(f"DEBUG: POST data: {data}")
         date = data.get('date')
         # Support both 'desc' and 'subject' fields for compatibility
         desc = data.get('desc') or data.get('subject')
+        print(f"DEBUG: Extracted desc: {desc}")
         if not desc:
             return jsonify({'msg': 'Description (desc or subject) is required'}), 422
         win = Win(date=date, desc=desc, user_id=user_id)
@@ -62,7 +66,9 @@ def wins():
         db.session.commit()
         return jsonify({'msg': 'Win added'})
     else:
+        print(f"DEBUG: GET request for user {user_id}")
         wins = Win.query.filter_by(user_id=user_id).all()
+        print(f"DEBUG: Found {len(wins)} wins")
         # Format dates to MM.DD format for frontend
         formatted_wins = []
         for w in wins:
@@ -79,10 +85,12 @@ def wins():
                     formatted_date = w.date  # Keep as is if unknown format
                 
                 formatted_wins.append({'date': formatted_date, 'desc': w.desc, 'subject': w.desc})
-            except:
+            except Exception as e:
+                print(f"DEBUG: Error formatting win {w.id}: {e}")
                 # If date parsing fails, keep original
                 formatted_wins.append({'date': w.date, 'desc': w.desc, 'subject': w.desc})
         
+        print(f"DEBUG: Returning {len(formatted_wins)} formatted wins")
         return jsonify(formatted_wins)
 
 if __name__ == '__main__':
